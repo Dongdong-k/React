@@ -3,21 +3,25 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function App(){
-  // [state, setState] = useState
-  //  state = 변수, setState = 콜백함수로 state를 가지고 있는 함수
-  const [state, setState] = useState(1)
-  const incrementItem = () => setState(state +1 )
-  const decrementItem = () => setState(state -1 )
-  const doubleItem = () => setState(state*2 )
+  // 1. initialValue 값을 넣어주는 useInput 작성
+  // 기능 : 초기값 입력시 그 값을 반환 & 입력값 변경시 console.log function 기능
+  const useInput = initialValue => {
+    // 1. 초기값 입력 기능
+    const [value, setValue] = useState(initialValue); 
+    // 2. function 설정
+    const onChange = (event) => {
+      console.log(event.target);
+      // console.log(event)
+    }
+    return {value, onChange}
+  }
+  // 초기값 입력
+  const name = useInput("Mr.Kim");
 
   return (
     <div className="App">
       <h1>Hello CodeSandbox</h1>
-      <h2>Start coding</h2>
-      <h2>Current State : {state}</h2>
-      <button onClick={incrementItem}>Increase</button>
-      <button onClick={decrementItem}>Decrease</button>
-      <button onClick={doubleItem}>Double Times</button>
+      <input placeholder="Type your name" {...name}></input>
     </div>
   );
 }
