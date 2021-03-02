@@ -1,40 +1,51 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
 
-function App(){
-  // 1. initialValue 값을 넣어주는 useInput 작성
-  // 기능 : 초기값 입력시 그 값을 반환 & 입력값 변경시 유효성 검증하는 function 기능
-  const useInput = (initialValue, validator) => {
-    // 1. 초기값 입력 기능
-    const [value, setValue] = useState(initialValue); 
-    // 2. function 설정
-    //  value 에 event.target.value 값 할당해주고
-    //  그 value 값을 콜백 함수를 이용해 업데이트 해주는 것
-    const onChange = (event) => {
-      const {target : {value}} = event;
-      // validator : 유효성 검증 기능 추가
-      // function 입력 여부 체크
-      let willUpdate = true;
-      if (typeof validator === "function"){
-        // 입력된 function 결과값 입력 - true or false
-        // useState 와 동일하게 콜백함수로 생각하면 됨
-        willUpdate = validator(value)
-      }
-      if (willUpdate){
-        setValue(value)
-      }
-    }
-    return {value, onChange}
+// API 나 다른 곳으로부터 정보를 가져올 때
+const content = [
+  {
+    tab: "Section 1",
+    content: "I'm the contecnt of the Section 1",
+  },
+  {
+    tab: "Section 2",
+    content: "I'm the contecnt of the Section 2",
+  },
+];
+
+const useTab = (initialTab, allTabs) => {
+  const [currentIndex, setCurrentIndex] = useState(initialTab);
+  // setCurrentIndex(currentIndex);
+  // 오류 점검하기 - allTabs 미입력 or Array 형태가 아닌 경우
+  if (!allTabs || !Array.isArray(allTabs)) {
+    console.log("allTabs 입력 되지 않았습니다 or Array 아닙니다");
+    console.log(!allTabs);
+    console.log(!Array.isArray(allTabs));
+    return;
+  } else {
+    console.log("오류 없음");
   }
-  // 초기값, 유효성 검증 함수 입력
-  const maxLen = (value) => value.length <= 10; 
-  const name = useInput("Mr.Kim", maxLen);
-  
+  return {
+    currentItem: allTabs[currentIndex],
+    changeItem: setCurrentIndex,
+  };
+};
+
+function App() {
+  const { currentItem, changeItem } = useTab(0, content);
+  const section1 = () => changeItem(0);
+  const section2 = () => changeItem(1);
+  // console.log(currentItem.content);
   return (
     <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <input placeholder="Type your name" {...name}></input>
+      {content.map((sectionName, index) => (
+        <button onClick={() => changeItem(index)}>{sectionName.tab}</button>
+      ))}
+      <button onClick={section1}>section1</button>
+      <button onClick={section2}>section2</button>
+      <div>{currentItem.content}</div>
+      {/* <button onClick={currentItem.section2}>section2</button> */}
     </div>
   );
 }
