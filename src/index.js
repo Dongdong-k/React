@@ -2,37 +2,30 @@ import React, { useEffect, useState, useRef } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 
-// 기능 : 저장하거나 삭제 등 기능을 실행할 때 다시 한번 확인하고 입력 결과값에 따라 기능 수행
-const useConfirm = (message = " ", callback, rejection) => {
-  if (typeof callback !== "function") {
-    return;
-  }
-  const confirmAction = () => {
-    // confirm : 메세지를 띄우는 창으로 사용시 window.confirm 으로 입력 필요
-    if (window.confirm(message)) {
-      callback();
-    } else {
-      rejection();
-    }
+// 기능 : 홈페이지 종료시 종료할 것인지 묻는 경고창 활성화
+const usePreventLeave = () => {
+  // event 발생시 실행 기능 : beforeunload 기능 사용시 아래 내용 작성 필요
+  const listener = (event) => {
+    event.preventDefault();
+    event.returnValue = "";
   };
-  return confirmAction;
+  // function 작성하여 eventlistener 로 연결하고 추후 function 기능을 반환
+  const enablePrevent = () => window.addEventListener("beforeunload", listener);
+  const disablePrevent = () =>
+    window.removeEventListener("beforeunload", listener);
+
+  return { enablePrevent, disablePrevent };
 };
 
 const App = () => {
-  // yes_function 정의
-  const deleteWorldFunction = () => console.log("Deleted the World");
-  // no_function 정의
-  const deleteWorldRejection = () => console.log("Rejected");
-  // useConfirm(초기값, yes_func, no_func) 기능 할당 및 button onclick 연결하기
-  const deleteWorldAction = useConfirm(
-    "Are you sure?",
-    deleteWorldFunction,
-    deleteWorldRejection
-  );
+  // usePreventLeave 에서 반환된 함수의 기능을 할당 받고 버튼에 연결
+  const { enablePrevent, disablePrevent } = usePreventLeave();
+
   return (
     <div className="App">
       <h1>Hi</h1>
-      <button onClick={deleteWorldAction}>Delete the world</button>
+      <button onClick={enablePrevent}>Protect</button>
+      <button onClick={disablePrevent}>UnProtect</button>
     </div>
   );
 };
